@@ -1,0 +1,29 @@
+{
+  "result": [
+    {
+      "name": "living room",
+      "temperature": "21"
+    },
+    {
+      "name": "bed room",
+      "temperature": "18"
+    },
+    {
+      "name": "kitchen",
+      "temperature": "37"
+    },
+    {
+      "name": "toilet",
+      "temperature": "32"
+    },
+    {
+      "name": "dining room",
+      "temperature": "28"
+    },
+    {
+      "name": "freezer",
+      "temperature": "-5"
+    }
+
+  ]
+}

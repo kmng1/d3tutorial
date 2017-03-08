@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css?family=Baloo+Bhaina');
+
+body{
+    font-family: 'Baloo Bhaina', cursive;
+
+}
+
+.graph-container{
+    background-color: #212121;
+    max-width: 420px;
+    margin: auto;
+    padding: 10px;
+    color: #fff;
+}
+
+.bar{
+    padding: 0 0.5rem;
+    text-align: right;
+}
