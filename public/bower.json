@@ -1,0 +1,22 @@
+{
+  "name": "public",
+  "authors": [
+    "mrivantan <mr.ivan.tan@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.6.2",
+    "d3": "^4.7.1",
+    "jquery": "^3.1.1"
+  }
+}
