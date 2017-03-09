@@ -26,7 +26,33 @@ app.get('/api/get/mocktemperature', function(req, res){
 });
 
 
+const MAX = 100, MIN = 10;
+var ROOMS = ['living room', 'dining room', 'bed room', 'kitchen', 'toilet', 'freezer'];
+app.get('/api/get/humantraffic', function(req,res){
+    var data = {};
+    data.result = [];
+    var count =  Math.floor(Math.random() * (MAX - MIN + 1)) + MIN;
 
+    for(var i = 0; i < count; i++){
+        var person = {};
+        person.name = rName();
+        person.roomid = rMax(ROOMS.length-1);
+        person.room = ROOMS[person.roomid];
+
+        data.result.push(person);
+    }
+    res.send(data).end();
+});
+function rName(){
+    var n = 'name-';
+    for(var j = 0; j < 6; j++)
+        n += String.fromCharCode(97 + rMax(25));
+    return n;
+}
+
+function rMax(n){
+    return  Math.round(Math.random() * n);
+}
 
 app.listen(8000, function () {
     console.log("Server running at http://localhost:" + 8000);

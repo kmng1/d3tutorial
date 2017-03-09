@@ -28,7 +28,7 @@
     var container;
 
 
-    document.addEventListener("DOMContentLoaded", function(e) {
+    document.addEventListener("DOMContentLoaded", function() {
 
         // initialise
         call(init);
@@ -59,7 +59,8 @@
             .data(_data, function(d){ return d.name});
 
         bars.transition(t)
-            .attr('width', function(d){  return celsiusToWidth(d.temperature) });
+            .attr('width', function(d){ return celsiusToWidth(d.temperature) })
+            .attr('fill', function(d){ return d3.hsv( celsiusToHue(d.temperature, X_DOMAIN_MAX), 0.5,1) });
 
     }
 
@@ -80,6 +81,18 @@
         container.append("g")
               .call(xAxis)
               .attr( 'transform', 'translate(' + MARGIN_LEFT +',' + (HEIGHT-MARGIN_BOTTOM) + ')' );
+
+
+        container.selectAll('.tick')
+            .on('mouseover', function(){
+                d3.select(this).select('text').attr('fill', 'red');
+                d3.select(this).select('line').transition().attr('y1', -Y_RANGE_MAX);
+
+            })
+            .on('mouseout', function(){
+                d3.select(this).select('text').attr('fill', '#000');
+                d3.select(this).select('line').transition().attr('y1', 0);
+            });
 
         // CREATE: Y AXIS---------------------
         var yValues = [];
@@ -128,5 +141,11 @@
 
     }
 
+    function celsiusToHue(c, max){
+        var h = 180;
+        if(c > 0)  h += c/max * 180;
+        if(h > 360) h = 360;
+        return h;
+    }
 
 })();
