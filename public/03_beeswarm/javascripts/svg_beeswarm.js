@@ -29,7 +29,7 @@
         draw(response);
     });
 
-    var circles, container;
+    var circles, container, simulation;
     function draw(_data){
 
     container = d3.select('div#graph-01')
@@ -55,7 +55,7 @@
         .attr( 'transform', 'translate(' + MARGIN_LEFT +','+MARGIN_TOP+')' );
 
 
-    var simulation = d3.forceSimulation(_data)
+    simulation = d3.forceSimulation(_data)
         .velocityDecay(0.1)
         .force("x", d3.forceX(function(d) { return x(d.roomid) }).strength(0.01))
         .force("y", d3.forceY(HEIGHT / 2).strength(0.003))
@@ -68,13 +68,32 @@
         .data(simulation.nodes())
         .enter().append('circle')
         .attr('r', 10)
-        .attr('fill', '#000')
+        .attr('fill', '#000');
+
+    circles.call(d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended));
+
+    circles
         .on('mouseover', mouseover)
         .on('mouseleave', mouseleave);
 
     }
 
+    function dragstarted(d) {
 
+    }
+
+    function dragged(d) {
+        d3.select(this)
+            .attr('transform', function(d) {
+                return 'translate(' + (d.x = d3.event.x) + ',' + (d.y = d3.event.y) + ')' });
+    }
+
+    function dragended(d) {
+
+    }
 
     function x(n){
         return 100 + (X_RANGE_MAX/6*n);
@@ -86,7 +105,7 @@
     }
 
     function mouseover(d){
-        d3.select(this)
+        d3.select(this).raise()
             .transition()
             .attr('fill', 'red');
 

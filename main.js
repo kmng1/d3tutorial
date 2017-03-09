@@ -54,6 +54,6 @@ function rMax(n){
     return  Math.round(Math.random() * n);
 }
 
-app.listen(8000, function () {
-    console.log("Server running at http://localhost:" + 8000);
+app.listen(3000, function () {
+    console.log("Server running at http://localhost:" + 3000);
 });
