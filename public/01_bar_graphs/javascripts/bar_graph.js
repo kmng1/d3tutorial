@@ -8,7 +8,7 @@
 
     call(init);
     d3.interval(function(elapsed){
-            call(update)
+            call(update);
         },DURATION
     );
 
