@@ -1,6 +1,5 @@
 (function(){
 
-
     const LOCAL_URL = 'data/data.json';
     const API_URL = '/api/get/mocktemperature';
     const DURATION = 1000;
@@ -11,9 +10,6 @@
             call(update);
         },DURATION
     );
-
-
-
 
     // EVENT TRIGGERED FUNCTIONS-------------------------
     function call(fn){
