@@ -4,9 +4,8 @@
     const LOCAL_URL = 'data/data.json';
     const API_URL = '/api/get/mocktemperature';
     const DURATION = 1000;
-    var response, groups, bars;
 
-    // MAIN ---------------------------------------------
+    // MAIN ===================================================
     document.addEventListener("DOMContentLoaded", function () {
         // Make the first call to server using call function
         // and initialise the app using init function
@@ -20,6 +19,7 @@
             // Set the interval to 1000 milliseconds
         }, DURATION);
     });
+    // ==========================================================
 
     // MAIN FUNCTION DEFINITIONS -------------------------
     function call(fn) {
@@ -29,9 +29,8 @@
             if (err) return;
 
             // Assign result from server to variable response
-            response = res.result;
-            // Format the response variable with the formatData helper class
-            response = formatData(response);
+            var response = res.result;
+
             // Call a separate function and pass in response as a parameter
             // In our case, either init or update function
             fn(response);
@@ -40,20 +39,19 @@
 
     function update(_data) {
 
-        // Transition config for .transition() function used later
+        // attach updated data to the groups
+        var groups = container.selectAll('div.bar-group')
+            .data(_data, function(d){ return d.name });
+
+        // Transition config for .transition() function used next
         var t = d3.transition()
             .duration(DURATION)
             .ease(d3.easeExpIn);
 
-        groups.data(_data);
-
-        bars.data(function (d) {
-                return [d]
-            })
-            .enter().select('div')
-            .html(function (d) {
-                return d.temperature
-            })
+        // Update the style of the bars based on new data attached above
+        groups.selectAll('div.bar')
+            .data(function (d) { return [d] })
+            .html(function (d) { return d.temperature })
             .transition(t)
             .style('background-color', function (d) {
                 return d3.hsv(celsiusToHue(d.temperature, 45), 1, 1);
@@ -62,51 +60,41 @@
                 return celsiusToWidth(d.temperature, 45, 10, 400) + "px"
             });
 
+        // Sort the array in descending order of temperature
+        // This is a standard array.sort method in most programming
         groups.sort(function (a, b) {
             return b.temperature - a.temperature
         });
     }
 
     function init(_data) {
+
         // Setup group divs
-        groups = d3.select('div#graph-01').selectAll('div.bar-group')
-            .data(_data)
+        var groups = d3.select('div#graph-01').selectAll('div.bar-group')
+            .data(_data, function(d){ return d.name })
             .enter().append('div')
             .attr('class', 'bar-group');
 
         // Setup labels for the bars
         groups.selectAll('label.bar-label')
-            .data(function (d) {
-                return [d]
-            })
+            .data(function (d) { return [d] })
             .enter().append('label')
             .attr('class', 'bar-label')
             .html(function (d) {
                 return d.name
             });
 
-        // Only bind the dataset to bars
-        bars = groups.selectAll('div.bar')
-            .data(function (d) {
-                return [d]
-            });
-
-        // Handle the event separately as we will be editing the bars
-        bars.enter().append('div')
+        // Setup empty divs as bars
+       groups.selectAll('div.bar')
+            .data(function (d) { return [d] })
+            .enter().append('div')
             .attr('class', 'bar');
+        // Handle the styling of the bar in the update() as it will change
 
         update(_data);
     }
 
-    // HELPER FUNCTIONS DEFINITIONSL-------------------------
-
-    // Format from string to number
-    function formatData(data) {
-        data.forEach(function (d) {
-            d.temperature = +d.temperature;
-        });
-        return data;
-    };
+    // HELPER FUNCTIONS DEFINITIONS-------------------------
 
     // Set Hue (colour code) based on temperature
     function celsiusToHue(c, max) {
