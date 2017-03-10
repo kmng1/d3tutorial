@@ -1,9 +1,9 @@
 (function () {
 
     // Declare constants and variables 
-    const LOCAL_URL = 'data/data.json';
-    const API_URL = '/api/get/mocktemperature';
-    const DURATION = 1000;
+    const   LOCAL_URL = 'data/data.json',   // local json demo file
+            API_URL = '/api/get/mocktemperature',   // api url for dynamic data
+            DURATION = 1000;    // time between each poll in milliseconds
 
     // MAIN ===================================================
     document.addEventListener("DOMContentLoaded", function () {
@@ -45,8 +45,8 @@
 
         // Transition config for .transition() function used next
         var t = d3.transition()
-            .duration(DURATION)
-            .ease(d3.easeExpIn);
+            .duration(DURATION)     // how much time
+            .ease(d3.easeExpIn);    // tweening type
 
         // Update the style of the bars based on new data attached above
         groups.selectAll('div.bar')
