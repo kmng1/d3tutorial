@@ -7,26 +7,10 @@
     var WIDTH           = 960,
         HEIGHT          = 960,
 
-        MARGIN_LEFT     = 100,
-        MARGIN_RIGHT    = 25,
-        MARGIN_BOTTOM   = 25,
-        MARGIN_TOP      = 25,
-
-        X_DOMAIN_MIN    = -10,
-        X_DOMAIN_MAX    = 50,
-        X_RANGE_MIN     = 0,
-        X_RANGE_MAX     = WIDTH - MARGIN_LEFT - MARGIN_RIGHT,
-
-        Y_DOMAIN_MIN    = 0,
-        Y_RANGE_MIN     = 0,
-        Y_RANGE_MAX     = HEIGHT - MARGIN_BOTTOM - MARGIN_TOP,
-
-        BAR_HEIGHT      = 30,
-
         DURATION        = 1000;
 
     var container, roomPaths, roomLabels, roomCenters = [], roomData;
-    var circles, simulation;
+    var simulation;
 
     // "MAIN" ==============================================================
     document.addEventListener("DOMContentLoaded", function() {
@@ -92,7 +76,7 @@
 
     function updateRoom(_data){
         for(var i in roomData.paths)
-            roomData.paths[i].fill = d3.hsv(celsiusToHue(_data[i].temperature, 45), 0.5, 1);
+            roomData.paths[i].fill = d3.hsv(celsiusToHue(_data[i].temperature, 45), 1, 1);
 
         var rooms = container.select('g.room-path').selectAll('path')
             .data(roomData.paths, function(d){ return d.name })
@@ -103,16 +87,18 @@
     function initSwarm(_data){
 
         simulation = d3.forceSimulation(_data)
-            .velocityDecay(0.8)
-            .force("x", d3.forceX(function(d) { return roomCenters[d.roomid].x }).strength(0.5))
-            .force("y", d3.forceY(function(d) { return roomCenters[d.roomid].y }).strength(0.5))
+            .velocityDecay(0.5)
+            .force("x", d3.forceX(function(d) { return roomCenters[d.roomid].x }).strength(0.3))
+            .force("y", d3.forceY(function(d) { return roomCenters[d.roomid].y }).strength(0.3))
             .force("collide", d3.forceCollide().radius(10).iterations(2))
             .on('tick', tick);
 
-        circles = container.append('svg:g')
-            .attr('class', 'circles')
-            .selectAll('circle')
-            .data(simulation.nodes())
+        circleG = container.append('svg:g')
+            .attr('class', 'circles');
+
+
+        circleG.selectAll('circle')
+            .data(simulation.nodes(), function(d){console.log(d)})
             .enter().append('circle')
             .attr('r', 10)
             .attr('fill', '#000');
@@ -124,7 +110,8 @@
     }
 
     function tick(e){
-        circles.attr('transform', function(d) {
+        circleG.selectAll('circle')
+            .attr('transform', function(d) {
             return 'translate(' + d.x + ',' + d.y + ')'; });
     }
 
@@ -166,7 +153,6 @@
 
     function getBoundingBoxCenter (selection) {
         var bbox = selection.getBoundingClientRect();
-        //console.log(bbox);
         return {
             x : bbox.left + bbox.width/2,
             y : bbox.top + bbox.height/2
