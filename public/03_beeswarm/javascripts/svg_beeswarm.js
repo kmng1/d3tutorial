@@ -1,26 +1,15 @@
 (function(){
     const API_URL = '/api/get/humantraffic';
 
-    var WIDTH           = 1200,
+    var WIDTH           = 1000,
         HEIGHT          = 400,
 
         MARGIN_LEFT     = 100,
-        MARGIN_RIGHT    = 25,
-        MARGIN_BOTTOM   = 25,
+        MARGIN_RIGHT    = 100,
         MARGIN_TOP      = 25,
 
-        X_DOMAIN_MIN    = -10,
-        X_DOMAIN_MAX    = 50,
         X_RANGE_MIN     = 0,
-        X_RANGE_MAX     = WIDTH - MARGIN_LEFT - MARGIN_RIGHT,
-
-        Y_DOMAIN_MIN    = 0,
-        Y_RANGE_MIN     = 0,
-        Y_RANGE_MAX     = HEIGHT - MARGIN_BOTTOM - MARGIN_TOP,
-
-        BAR_HEIGHT      = 30,
-
-        DURATION        = 1000;
+        X_RANGE_MAX     = WIDTH - MARGIN_LEFT - MARGIN_RIGHT;
 
     d3.json(API_URL, function(err, res){
         if(err) return;
@@ -29,7 +18,7 @@
         draw(response);
     });
 
-    var circles, container, simulation;
+    var container, simulation, circleG;
     function draw(_data){
 
     container = d3.select('div#graph-01')
@@ -38,68 +27,74 @@
         .attr('height', HEIGHT);
 
        // CREATE: Y AXIS---------------------
-    var yValues = ['living room', 'dining room', 'bed room', 'kitchen', 'toilet', 'freezer'];
-    var tickCount = yValues.length;
+    var labelValues = ['living room', 'dining room', 'bed room', 'kitchen', 'toilet', 'freezer'];
+    var tickCount = labelValues.length;
 
-    var yAxisScale = d3.scaleLinear()
-        .domain( [0, tickCount]).nice()
+    var axisScale = d3.scaleLinear()
+        .domain( [0, tickCount-1])
         .range( [X_RANGE_MIN, X_RANGE_MAX] );
 
-    var yAxis = d3.axisBottom(yAxisScale)
-        .ticks(tickCount)
-        .tickFormat(function(d,i){ return yValues[i] });
+    var axis = d3.axisBottom(axisScale)
+        .ticks(tickCount-1)
+        .tickFormat(function(d,i){ return (i<=_data.length)? labelValues[i] : undefined; });
 
     container.append('g')
-        .call(yAxis)
+        .call(axis)
         .attr( 'transform', 'translate(' + MARGIN_LEFT +','+MARGIN_TOP+')' );
 
 
     simulation = d3.forceSimulation(_data)
         .velocityDecay(0.1)
-        .force("x", d3.forceX(function(d) { return x(d.roomid) }).strength(0.01))
-        .force("y", d3.forceY(HEIGHT / 2).strength(0.003))
-        .force("collide", d3.forceCollide().radius(10).iterations(2))
+        .force("x", d3.forceX(function(d) { return x(d.roomid) }).strength(0.05))
+        .force("y", d3.forceY(HEIGHT / 2).strength(0.05))
+        .force("collide", d3.forceCollide().radius(10).iterations(4))
         .on('tick', tick);
 
-    circles = container.append('svg:g')
-        .attr('class', 'circles')
-        .selectAll('circle')
-        .data(simulation.nodes())
+    circleG = container.append('svg:g')
+        .attr('class', 'circles');
+
+
+    circleG.selectAll('circle')
+        .data(simulation.nodes(), function(d){console.log(d)})
         .enter().append('circle')
         .attr('r', 10)
         .attr('fill', '#000');
 
-    circles.call(d3.drag()
+    circleG.selectAll('circle').call(d3.drag()
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended));
 
-    circles
+    circleG.selectAll('circle')
         .on('mouseover', mouseover)
         .on('mouseleave', mouseleave);
 
     }
 
     function dragstarted(d) {
-
+        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+        d3.event.subject.fx = d3.event.subject.x;
+        d3.event.subject.fy = d3.event.subject.y;
     }
 
     function dragged(d) {
-        d3.select(this)
-            .attr('transform', function(d) {
-                return 'translate(' + (d.x = d3.event.x) + ',' + (d.y = d3.event.y) + ')' });
+        d3.event.subject.fx = d3.event.x;
+        d3.event.subject.fy = d3.event.y;
     }
 
     function dragended(d) {
-
+        if (!d3.event.active) simulation.alphaTarget(0);
+        d3.event.subject.fx = null;
+        d3.event.subject.fy = null;
     }
 
     function x(n){
-        return 100 + (X_RANGE_MAX/6*n);
+        return MARGIN_LEFT + (X_RANGE_MAX/5*n);
     }
 
     function tick(e){
-        circles.attr('transform', function(d) {
+        console.log('.');
+        circleG.selectAll('circle').attr('transform', function(d) {
             return 'translate(' + d.x + ',' + d.y + ')'; });
     }
 
