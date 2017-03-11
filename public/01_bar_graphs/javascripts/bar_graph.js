@@ -40,7 +40,7 @@
     function update(_data) {
 
         // attach updated data to the groups
-        var groups = container.selectAll('div.bar-group')
+        var groups = d3.select('div#graph-01').selectAll('div.bar-group')
             .data(_data, function(d){ return d.name });
 
         // Transition config for .transition() function used next
