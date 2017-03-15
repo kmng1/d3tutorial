@@ -91,7 +91,8 @@
             .force("x", d3.forceX(function(d) { return roomCenters[d.roomid].x }).strength(0.3))
             .force("y", d3.forceY(function(d) { return roomCenters[d.roomid].y }).strength(0.3))
             .force("collide", d3.forceCollide().radius(10).iterations(2))
-            .on('tick', tick);
+            .on('tick', tick)
+        ;
 
         circleG = container.append('svg:g')
             .attr('class', 'circles');
